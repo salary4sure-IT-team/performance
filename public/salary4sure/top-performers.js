@@ -79,14 +79,22 @@ function displayPerformers(data, container) {
             ? performer['Fresh Cases'] || 0
             : performer['Repeat Cases'] || 0;
         
-        const amountInCr = (amount / 10000000).toFixed(2);
+        // Format amount: Fresh in Lakhs, Repeat in Crores
+        let amountDisplay;
+        if (isFresh) {
+            const amountInLakh = (amount / 100000).toFixed(0);
+            amountDisplay = `₹${amountInLakh} Lakh`;
+        } else {
+            const amountInCr = (amount / 10000000).toFixed(2);
+            amountDisplay = `₹${amountInCr} Cr`;
+        }
         
         card.innerHTML = `
             <div class="medal-container">
                 <div class="medal">${medals[index]}</div>
             </div>
             <div class="performer-name">${performer['Executive Name'] || 'N/A'}</div>
-            <div class="amount-badge">₹${amountInCr} Cr</div>
+            <div class="amount-badge">${amountDisplay}</div>
             <div class="cases-label">Cases</div>
             <div class="cases-badge">${cases}</div>
         `;
