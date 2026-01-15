@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Performance Report - Minutes Loan</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="report-header">
+            <h1 class="domain-name">Minutes Loan</h1>
+            <h2 class="report-date" id="reportDate">Daily Performance Report</h2>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div class="nav-link">
+                <a href="/executive-report">Executive Report</a>
+            </div>
+        </div>
+
+        <div class="report-container">
+            <div class="table-wrapper">
+                <table id="reportTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>New</th>
+                            <th>Repeat</th>
+                            <th>Total Cases</th>
+                            <th>Loan Amount</th>
+                            <th>PF Amount</th>
+                            <th>Disbursal Amount</th>
+                            <th>Repay Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be dynamically generated -->
+                    </tbody>
+                    <tfoot id="grandTotalRow">
+                        <!-- Grand Total will be dynamically generated -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdate">Never</span>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

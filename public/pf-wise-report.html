@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PF Wise Loan Disbursal Report - Minutes Loan</title>
+    <link rel="stylesheet" href="pf-wise-report.css">
+</head>
+<body>
+    <div class="container">
+        <div class="report-header">
+            <h1 class="domain-name">Minutes Loan</h1>
+            <h2 class="report-title">Total Sanction VS Disbursal Report Of (ML)</h2>
+            <h3 class="report-subtitle">(Minutes Loan) PF % Wise Today Loan Disbursal Report</h3>
+            <div class="nav-link">
+                <a href="/">Daily Performance Report</a> | 
+                <a href="/executive-report">Executive Report</a> | 
+                <a href="/today-sanction-report">Today Sanction Report</a>
+            </div>
+        </div>
+
+        <div class="report-container">
+            <div class="table-wrapper">
+                <table id="pfWiseTable">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>PF %</th>
+                            <th>Total cases</th>
+                            <th>Loan Amount</th>
+                            <th>DISBURSE Amount</th>
+                            <th>Repay Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be dynamically generated -->
+                    </tbody>
+                    <tfoot id="grandTotalRow">
+                        <!-- Grand Total will be dynamically generated -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdate">Never</span>
+        </div>
+    </div>
+
+    <script src="pf-wise-report.js"></script>
+</body>
+</html>
+

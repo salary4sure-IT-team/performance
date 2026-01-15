@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Sanction V/S Disbursal Report - Minutes Loan</title>
+    <link rel="stylesheet" href="executive-report.css">
+</head>
+<body>
+    <div class="container">
+        <div class="report-header">
+            <h1 class="domain-name">Minutes Loan</h1>
+            <h2 class="report-title">Total Sanction V/S Disbursal Report (ML)</h2>
+            <div class="nav-link">
+                <a href="/">Daily Performance Report</a> | 
+                <a href="/today-sanction-report">Today Sanction Report</a>
+            </div>
+        </div>
+
+        <div class="report-container">
+            <div class="table-wrapper">
+                <table id="executiveTable">
+                    <thead>
+                        <tr>
+                            <th>Sr</th>
+                            <th>Executive Name</th>
+                            <th>Number of Cases</th>
+                            <th>Loan Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be dynamically generated -->
+                    </tbody>
+                    <tfoot id="grandTotalRow">
+                        <!-- Grand Total will be dynamically generated -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdate">Never</span>
+        </div>
+    </div>
+
+    <script src="executive-report.js"></script>
+</body>
+</html>
+

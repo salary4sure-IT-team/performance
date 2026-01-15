@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today Sanction Report - Minutes Loan</title>
+    <link rel="stylesheet" href="today-sanction-report.css">
+</head>
+<body>
+    <div class="container">
+        <div class="report-header">
+            <h1 class="domain-name">Minutes Loan</h1>
+            <h2 class="report-title">Today Sanction Reports</h2>
+            <div class="nav-link">
+                <a href="/">Daily Performance Report</a> | 
+                <a href="/executive-report">Executive Report</a>
+            </div>
+        </div>
+
+        <div class="report-container">
+            <!-- Fresh (New) Cases Section -->
+            <div class="report-section">
+                <h3 class="section-title">Today Sanction Reports -(Fresh)</h3>
+                <div class="table-wrapper">
+                    <table id="freshTable">
+                        <thead>
+                            <tr>
+                                <th>Sr</th>
+                                <th>Executive Name</th>
+                                <th>Number of Cases</th>
+                                <th>Loan Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="freshTableBody">
+                            <!-- Data will be dynamically generated -->
+                        </tbody>
+                        <tfoot id="freshGrandTotalRow">
+                            <!-- Grand Total will be dynamically generated -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Repeat Cases Section -->
+            <div class="report-section">
+                <h3 class="section-title">Today Sanction Reports -(Repeat)</h3>
+                <div class="table-wrapper">
+                    <table id="repeatTable">
+                        <thead>
+                            <tr>
+                                <th>Sr</th>
+                                <th>Executive Name</th>
+                                <th>Number of Cases</th>
+                                <th>Loan Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repeatTableBody">
+                            <!-- Data will be dynamically generated -->
+                        </tbody>
+                        <tfoot id="repeatGrandTotalRow">
+                            <!-- Grand Total will be dynamically generated -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdate">Never</span>
+        </div>
+    </div>
+
+    <script src="today-sanction-report.js"></script>
+</body>
+</html>
+

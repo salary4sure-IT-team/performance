@@ -1,0 +1,411 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+    color: #2c3e50;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.report-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    border-bottom: 4px solid rgba(255, 255, 255, 0.2);
+}
+
+.domain-name {
+    font-size: 2.8em;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.5px;
+}
+
+.report-title {
+    font-size: 1.4em;
+    font-weight: 500;
+    opacity: 0.95;
+    margin-bottom: 15px;
+    letter-spacing: 0.3px;
+}
+
+.nav-link {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 0.9em;
+}
+
+.nav-link a {
+    color: white;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-link a:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.report-container {
+    padding: 40px;
+    background: #fafbfc;
+}
+
+.report-section {
+    margin-bottom: 40px;
+}
+
+.report-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.95em;
+}
+
+thead {
+    background: #ffc107;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+th {
+    padding: 16px 14px;
+    text-align: left;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #f57c00;
+    white-space: nowrap;
+    background: #ffc107;
+}
+
+th:nth-child(1) {
+    text-align: center;
+    width: 60px;
+}
+
+th:nth-child(2) {
+    text-align: left;
+}
+
+th:nth-child(3),
+th:nth-child(4) {
+    text-align: right;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+tbody tr {
+    transition: all 0.2s ease;
+    background: white;
+}
+
+tbody tr:hover {
+    transform: scale(1.002);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sr-cell {
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    width: 60px;
+}
+
+.name-cell {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.number-cell {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Gradient color coding for Loan Amount column based on position */
+.loan-amount-deep-green {
+    background-color: #2e7d32 !important;
+    color: white !important;
+}
+
+.loan-amount-deep-green:hover {
+    background-color: #388e3c !important;
+}
+
+.loan-amount-green {
+    background-color: #43a047 !important;
+    color: white !important;
+}
+
+.loan-amount-green:hover {
+    background-color: #4caf50 !important;
+}
+
+.loan-amount-light-green {
+    background-color: #66bb6a !important;
+    color: white !important;
+}
+
+.loan-amount-light-green:hover {
+    background-color: #81c784 !important;
+}
+
+.loan-amount-yellow {
+    background-color: #ffc107 !important;
+    color: #1a1a1a !important;
+}
+
+.loan-amount-yellow:hover {
+    background-color: #ffca28 !important;
+}
+
+.loan-amount-orange {
+    background-color: #ff9800 !important;
+    color: white !important;
+}
+
+.loan-amount-orange:hover {
+    background-color: #fb8c00 !important;
+}
+
+.loan-amount-red {
+    background-color: #e53935 !important;
+    color: white !important;
+}
+
+.loan-amount-red:hover {
+    background-color: #d32f2f !important;
+}
+
+/* Grand Total Row */
+tfoot {
+    background: #fff;
+}
+
+.grand-total-row {
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%) !important;
+    font-weight: 700;
+    border-top: 3px solid #4caf50;
+    box-shadow: 0 -2px 8px rgba(76, 175, 80, 0.1);
+}
+
+.grand-total-row:hover {
+    background: linear-gradient(180deg, #c8e6c9 0%, #a5d6a7 100%) !important;
+    transform: none !important;
+}
+
+.grand-total-label {
+    font-weight: 800;
+    font-size: 1.15em;
+    color: #2e7d32;
+    text-align: left;
+    padding: 18px 14px;
+    border-top: 3px solid #4caf50;
+    border-bottom: none;
+    letter-spacing: 0.5px;
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+}
+
+.grand-total-row td.number-cell {
+    font-weight: 800;
+    font-size: 1.08em;
+    color: #2e7d32;
+    padding: 18px 14px;
+    border-top: 3px solid #4caf50;
+    border-bottom: none;
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+}
+
+.last-update {
+    padding: 20px 40px;
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875em;
+    border-top: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+.last-update span {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Loading state */
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: #6c757d;
+    font-size: 1em;
+}
+
+.loading::after {
+    content: '...';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% {
+        content: '.';
+    }
+    40% {
+        content: '..';
+    }
+    60%, 100% {
+        content: '...';
+    }
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .container {
+        margin: 10px;
+        border-radius: 8px;
+    }
+
+    .report-container {
+        padding: 20px;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 12px 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .report-header {
+        padding: 30px 20px;
+    }
+
+    .domain-name {
+        font-size: 2.2em;
+    }
+
+    .report-title {
+        font-size: 1.2em;
+    }
+
+    .nav-link {
+        position: static;
+        margin-top: 15px;
+        display: block;
+    }
+
+    .nav-link a {
+        display: inline-block;
+        margin: 5px;
+    }
+
+    .report-container {
+        padding: 15px;
+    }
+
+    .table-wrapper {
+        border-radius: 6px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.8em;
+    }
+
+    th {
+        font-size: 0.7em;
+        padding: 12px 8px;
+    }
+
+    .grand-total-label,
+    .grand-total-row td {
+        font-size: 0.95em;
+        padding: 14px 8px;
+    }
+
+    .last-update {
+        padding: 15px 20px;
+        font-size: 0.8em;
+    }
+}
+
+/* Scrollbar styling */
+.report-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.report-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.report-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}
+
+.report-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+}
+
