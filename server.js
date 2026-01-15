@@ -954,7 +954,7 @@ async function fetchSalary4SureData(fromDate = null, toDate = null) {
     
     const response = await axios.get(SALARY4SURE_SHEET_URL, {
       responseType: 'text',
-      timeout: 10000,
+      timeout: 30000,
     });
 
     const records = parse(response.data, {
@@ -1160,8 +1160,9 @@ async function fetchSalary4SureExecutiveReportData(fromDate = null, toDate = nul
   try {
     const filteredData = await fetchSalary4SureData(fromDate, toDate);
 
-    const sanctionedByKeys = ['Sanctioned By', 'Sanctioned by', 'sanctioned by', 'SANCTIONED BY', 
-                              'Sanctioned By ', 'SanctionedBy', 'Sanctioned_By'];
+    const sanctionedByKeys = ['Sanction By', 'Sanctioned By', 'Sanctioned by', 'sanctioned by', 'SANCTIONED BY', 
+                              'Sanctioned By ', 'SanctionedBy', 'Sanctioned_By', 'Sanction by', 'sanction by',
+                              'Executive Name', 'Executive name', 'EXECUTIVE NAME', 'executive name', 'Employee Name', 'employee name', 'EMPLOYEE NAME'];
     const loanAmountKeys = ['Loan Amount', 'Loan amount', 'loan amount', 'LOAN AMOUNT', 'Loan Amount ', 'LoanAmount'];
 
     const executiveGroups = {};
@@ -1171,11 +1172,14 @@ async function fetchSalary4SureExecutiveReportData(fromDate = null, toDate = nul
       for (const key of sanctionedByKeys) {
         if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
           executiveName = row[key].toString().trim();
-          if (executiveName) break;
+          if (executiveName && executiveName.length > 0) break;
         }
       }
       
-      if (!executiveName || executiveName.toLowerCase().includes('sanctioned')) continue;
+      if (!executiveName) continue;
+      
+      // Skip only the header row
+      if (executiveName.toLowerCase() === 'sanctioned by' || executiveName.toLowerCase() === 'executive name') continue;
       
       if (!executiveGroups[executiveName]) {
         executiveGroups[executiveName] = {
@@ -1556,6 +1560,152 @@ app.get('/api/salary4sure/pf-wise-report', async (req, res) => {
   }
 });
 
+// Salary4Sure Top 3 Performers Report
+async function fetchSalary4SureTopPerformersData() {
+  try {
+    const filteredData = await fetchSalary4SureData();
+
+    const sanctionByKeys = ['Sanction By', 'Sanctioned By', 'Sanctioned by', 'sanctioned by', 'SANCTIONED BY', 
+                            'Sanctioned By ', 'SanctionedBy', 'Sanctioned_By', 'Sanction by', 'sanction by'];
+    const loanAmountKeys = ['Loan Amount', 'Loan amount', 'loan amount', 'LOAN AMOUNT', 'Loan Amount ', 'LoanAmount'];
+    const repaymentKeys = ['Repayment Amt', 'Repayment amt', 'repayment amt', 'REPAYMENT AMT', 'Repayment Amt ', 'RepaymentAmt'];
+    const caseTypeKeys = ['Case Type', 'Case type', 'case type', 'CASE TYPE', 'Case Type ', 'CaseType', 'Case_Type'];
+    const netDisbursalKeys = ['Net disburse amount', 'Net disburse Amt', 'Net disburse amt', 'net disburse amt', 'NET DISBURSE AMT', 'Net disburse Amt ', 'Net Disburse Amt', 'NetDisburseAmt',
+                               'Net Disbursal Amount', 'Net Disbursal amount', 'net disbursal amount', 'NET DISBURSAL AMOUNT', 'Net Disbursal Amount ', 'Net DisbursalAmount', 'NetDisbursalAmount', 
+                               'Net Disbused Amount', 'Net Disbused amount', 'net disbused amount', 'NET DISBUSED AMOUNT', 'Net Disbused Amount ', 'Net DisbusedAmount',
+                               'Disbursal Amount', 'Disbursal amount', 'disbursal amount', 'DISBURSAL AMOUNT', 'Disbursal Amount ', 'Net Disbursed Amount', 'net disbursed amount'];
+
+    function getCaseTypeValue(row, keys) {
+      for (const key of keys) {
+        const value = row[key];
+        if (value !== undefined && value !== null && value !== '') {
+          const str = value.toString().trim().toUpperCase();
+          return str;
+        }
+      }
+      return '';
+    }
+
+    const executiveGroups = {};
+    
+    for (const row of filteredData) {
+      let executiveName = null;
+      for (const key of sanctionByKeys) {
+        if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+          executiveName = row[key].toString().trim();
+          if (executiveName && executiveName.length > 0) break;
+        }
+      }
+      
+      if (!executiveName) continue;
+      if (executiveName.toLowerCase() === 'sanction by' || executiveName.toLowerCase() === 'sanctioned by') continue;
+      
+      if (!executiveGroups[executiveName]) {
+        executiveGroups[executiveName] = {
+          name: executiveName,
+          sanctionAmount: 0,
+          disbursalAmount: 0,
+          repaymentAmount: 0,
+          cases: 0,
+          freshAmount: 0,
+          freshCases: 0,
+          repeatAmount: 0,
+          repeatCases: 0,
+          hasFresh: false,
+          hasRepeat: false
+        };
+      }
+      
+      const loanAmt = getNumericValue(row, loanAmountKeys);
+      const repayAmt = getNumericValue(row, repaymentKeys);
+      const caseType = getCaseTypeValue(row, caseTypeKeys);
+      
+      executiveGroups[executiveName].sanctionAmount += loanAmt;
+      executiveGroups[executiveName].disbursalAmount += getNumericValue(row, netDisbursalKeys, 'disburse');
+      executiveGroups[executiveName].repaymentAmount += repayAmt;
+      executiveGroups[executiveName].cases++;
+      
+      if (caseType === 'FRESH') {
+        executiveGroups[executiveName].hasFresh = true;
+        executiveGroups[executiveName].freshAmount += loanAmt;
+        executiveGroups[executiveName].freshCases++;
+      } else if (caseType === 'REPEAT') {
+        executiveGroups[executiveName].hasRepeat = true;
+        executiveGroups[executiveName].repeatAmount += loanAmt;
+        executiveGroups[executiveName].repeatCases++;
+      }
+    }
+
+    // Calculate collection percentage and determine case type for each executive
+    const executiveData = Object.values(executiveGroups).map(exec => {
+      const collectionPercent = exec.disbursalAmount > 0 
+        ? ((exec.repaymentAmount / exec.disbursalAmount) * 100).toFixed(1)
+        : 0;
+      
+      let caseTypeDisplay = 'Fresh';
+      let targetAmount = 6000000; // Default 60 Lac
+      
+      // Special handling for specific executives with fixed case types and targets
+      if (exec.name.toLowerCase().includes('sourabh')) {
+        // Sourabh Chadda is always Both with 2 Cr target
+        caseTypeDisplay = 'Both';
+        targetAmount = 20000000; // 2 Cr
+      } else if (exec.name.toLowerCase().includes('rahul')) {
+        // Rahul is always Both with 2 Cr target
+        caseTypeDisplay = 'Both';
+        targetAmount = 20000000; // 2 Cr
+      } else if (exec.hasFresh && exec.hasRepeat) {
+        caseTypeDisplay = 'Both';
+      } else if (exec.hasRepeat && !exec.hasFresh) {
+        caseTypeDisplay = 'Repeat';
+        // Check if it's Prachi Nandan or Nandan Kumar for 3 Cr target
+        if (exec.name.toLowerCase().includes('prachi') || exec.name.toLowerCase().includes('nandan')) {
+          targetAmount = 30000000; // 3 Cr
+        }
+      }
+      
+      return {
+        'Executive Name': exec.name,
+        'Sanction Amount': exec.sanctionAmount,
+        'Disbursal Amount': exec.disbursalAmount,
+        'Repayment Amount': exec.repaymentAmount,
+        'Number of Cases': exec.cases,
+        'Fresh Amount': exec.freshAmount,
+        'Fresh Cases': exec.freshCases,
+        'Repeat Amount': exec.repeatAmount,
+        'Repeat Cases': exec.repeatCases,
+        'Collection %': collectionPercent,
+        'Loan Amount': exec.sanctionAmount,
+        'Case Type': caseTypeDisplay,
+        'Target Amount': targetAmount
+      };
+    });
+
+    // Sort by sanction amount (descending)
+    executiveData.sort((a, b) => b['Sanction Amount'] - a['Sanction Amount']);
+
+    return executiveData;
+  } catch (error) {
+    console.error('Error fetching Salary4Sure top performers data:', error.message);
+    throw error;
+  }
+}
+
+// API endpoint for top performers
+app.get('/api/salary4sure/top-performers', async (req, res) => {
+  try {
+    const data = await fetchSalary4SureTopPerformersData();
+    res.json(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch Salary4Sure top performers data',
+      message: error.message,
+      url: SALARY4SURE_SHEET_URL
+    });
+  }
+});
+
 // Debug endpoint to check raw CSV data
 app.get('/api/debug', async (req, res) => {
   try {
@@ -1606,6 +1756,11 @@ app.get('/salary4sure', (req, res) => {
 // Serve Salary4Sure executive report page
 app.get('/salary4sure/executive-report', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'salary4sure', 'executive-report.html'));
+});
+
+// Serve Salary4Sure top performers report page
+app.get('/salary4sure/top-performers', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'salary4sure', 'top-performers.html'));
 });
 
 // Serve Salary4Sure today sanction report page
