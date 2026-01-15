@@ -1026,10 +1026,11 @@ async function fetchSalary4SureLeaderboardData(fromDate = null, toDate = null) {
     const caseTypeKeys = ['Case Type', 'Case type', 'case type', 'CASE TYPE', 'Case Type ', 'CaseType', 'Case_Type'];
     const loanAmountKeys = ['Loan Amount', 'Loan amount', 'loan amount', 'LOAN AMOUNT', 'Loan Amount ', 'LoanAmount'];
     const processingFeeKeys = ['Processing Fee', 'Processing fee', 'processing fee', 'PROCESSING FEE', 'Processing Fee ', 'ProcessingFee'];
-    // Salary4Sure uses "Net disburse Amt" and "Repayment Amt"
-    const netDisbursalKeys = ['Net disburse Amt', 'Net disburse amt', 'net disburse amt', 'NET DISBURSE AMT', 'Net disburse Amt ', 'Net Disburse Amt', 'NetDisburseAmt',
+    // Salary4Sure uses "Net disburse amount" as the actual column name in the sheet
+    const netDisbursalKeys = ['Net disburse amount', 'Net disburse Amt', 'Net disburse amt', 'net disburse amt', 'NET DISBURSE AMT', 'Net disburse Amt ', 'Net Disburse Amt', 'NetDisburseAmt',
                                'Net Disbursal Amount', 'Net Disbursal amount', 'net disbursal amount', 'NET DISBURSAL AMOUNT', 'Net Disbursal Amount ', 'Net DisbursalAmount', 'NetDisbursalAmount', 
-                               'Net Disbused Amount', 'Net Disbused amount', 'net disbused amount', 'NET DISBUSED AMOUNT', 'Net Disbused Amount ', 'Net DisbusedAmount'];
+                               'Net Disbused Amount', 'Net Disbused amount', 'net disbused amount', 'NET DISBUSED AMOUNT', 'Net Disbused Amount ', 'Net DisbusedAmount',
+                               'Disbursal Amount', 'Disbursal amount', 'disbursal amount', 'DISBURSAL AMOUNT', 'Disbursal Amount ', 'Net Disbursed Amount', 'net disbursed amount'];
     const loanRepayKeys = ['Repayment Amt', 'Repayment amt', 'repayment amt', 'REPAYMENT AMT', 'Repayment Amt ', 'RepaymentAmt',
                            'Loan Repay Amount', 'Loan Repay amount', 'loan repay amount', 'LOAN REPAY AMOUNT', 'Loan Repay Amount ', 'Loan RepayAmount', 'LoanRepayAmount'];
     const disburseDateKeys = ['Disburse Date', 'Disburse date', 'disburse date', 'DISBURSE DATE', 'Disburse Date ', 'DisburseDate', 'Disburse_Date'];
