@@ -255,13 +255,14 @@
         }
 
         .amount-badge {
-            background: rgba(0, 0, 0, 0.1);
-            color: #333;
-            padding: 7px 9px;
-            border-radius: 8px;
-            font-size: 11px;
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 700;
             margin: 7px 0;
+            display: inline-block;
         }
 
         .cases-label {
@@ -296,8 +297,28 @@
             background: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             border: 1px solid #e9ecef;
+            max-height: 500px;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
 
         table {
@@ -307,6 +328,9 @@
 
         .table-container thead {
             background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%) !important;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table-container th {
@@ -317,6 +341,12 @@
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .table-container th:first-child {
+            background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%) !important;
+            text-align: center;
+            min-width: 60px;
         }
 
         td {
@@ -334,31 +364,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             font-weight: 700;
             color: white;
-            font-size: 12px;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         .rank-badge-table.rank-1 {
-            background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%);
+            background: linear-gradient(135deg, #ff8c42 0%, #ffa94d 100%);
             color: white;
         }
 
         .rank-badge-table.rank-2 {
-            background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .rank-badge-table.rank-3 {
-            background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
 
         .rank-badge-table.rank-other {
-            background: linear-gradient(90deg, #6973db 0%, #7a84e8 100%);
+            background: linear-gradient(135deg, #6973db 0%, #7a84e8 100%);
             color: white;
         }
 
