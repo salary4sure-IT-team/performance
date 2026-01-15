@@ -3,34 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PF Wise Loan Disbursal Report - Minutes Loan</title>
-    <link rel="stylesheet" href="pf-wise-report.css">
+    <title>Total Sanction V/S Disbursal Report - Salary4Sure</title>
+    <link rel="stylesheet" href="../executive-report.css">
 </head>
 <body>
     <div class="container">
         <div class="report-header">
-            <h1 class="domain-name">Minutes Loan</h1>
-            <h2 class="report-title">Total Sanction VS Disbursal Report Of (ML)</h2>
-            <h3 class="report-subtitle">(Minutes Loan) PF % Wise Today Loan Disbursal Report</h3>
+            <h1 class="domain-name">Salary4Sure</h1>
+            <h2 class="report-title">Total Sanction V/S Disbursal Report (S4S)</h2>
             <div class="nav-link">
-                <a href="/">Daily Performance Report</a> | 
-                <a href="/executive-report">Executive Report</a> | 
-                <a href="/today-sanction-report">Today Sanction Report</a> | 
-                <a href="/salary4sure">Salary4Sure</a>
+                <a href="/">Minutes Loan</a> | 
+                <a href="/salary4sure">Daily Performance Report</a> | 
+                <a href="/salary4sure/today-sanction-report">Today Sanction Report</a> | 
+                <a href="/salary4sure/pf-wise-report">PF Wise Report</a>
             </div>
         </div>
 
         <div class="report-container">
             <div class="table-wrapper">
-                <table id="pfWiseTable">
+                <table id="executiveTable">
                     <thead>
                         <tr>
-                            <th>DATE</th>
-                            <th>PF %</th>
-                            <th>Total cases</th>
+                            <th>Sr</th>
+                            <th>Executive Name</th>
+                            <th>Number of Cases</th>
                             <th>Loan Amount</th>
-                            <th>DISBURSE Amount</th>
-                            <th>Repay Amount</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -48,7 +45,7 @@
         </div>
     </div>
 
-    <script src="pf-wise-report.js"></script>
+    <script src="executive-report.js"></script>
 </body>
 </html>
 

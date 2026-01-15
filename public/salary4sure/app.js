@@ -1,4 +1,4 @@
-// Connect to Socket.IO server
+// Connect to Socket.IO server (optional - can use REST API only)
 const socket = io();
 
 const statusDot = document.getElementById('statusDot');
@@ -21,32 +21,83 @@ updateReportDate();
 // Socket connection events
 socket.on('connect', () => {
     console.log('Connected to server');
-    statusDot.className = 'status-dot connected';
-    statusText.textContent = 'Connected';
+    if (statusDot) {
+        statusDot.className = 'status-dot connected';
+        statusText.textContent = 'Connected';
+    }
 });
 
 socket.on('disconnect', () => {
     console.log('Disconnected from server');
-    statusDot.className = 'status-dot disconnected';
-    statusText.textContent = 'Disconnected';
+    if (statusDot) {
+        statusDot.className = 'status-dot disconnected';
+        statusText.textContent = 'Disconnected';
+    }
 });
 
 socket.on('connect_error', () => {
-    statusDot.className = 'status-dot disconnected';
-    statusText.textContent = 'Connection Error';
+    if (statusDot) {
+        statusDot.className = 'status-dot disconnected';
+        statusText.textContent = 'Connection Error';
+    }
 });
 
-// Receive data updates
-socket.on('leaderboard-update', (data) => {
-    console.log('Received data update:', data);
-    updateReport(data);
-    updateLastUpdateTime();
-});
+// Date filter variables
+let currentFromDate = null;
+let currentToDate = null;
 
-socket.on('error', (error) => {
-    console.error('Error:', error);
-    statusText.textContent = 'Error: ' + error.message;
-});
+// Fallback: Fetch data via REST API
+async function fetchDataViaAPI() {
+    try {
+        const params = new URLSearchParams();
+        if (currentFromDate) {
+            const fromDateStr = formatDateForAPI(currentFromDate);
+            params.append('fromDate', fromDateStr);
+        }
+        if (currentToDate) {
+            const toDateStr = formatDateForAPI(currentToDate);
+            params.append('toDate', toDateStr);
+        }
+        
+        const url = '/api/salary4sure/leaderboard' + (params.toString() ? '?' + params.toString() : '');
+        const response = await fetch(url);
+        const data = await response.json();
+        updateReport(data);
+        updateLastUpdateTime();
+    } catch (error) {
+        console.error('Failed to fetch data via API:', error);
+        tableBody.innerHTML = '<tr><td colspan="8" class="loading">Failed to load data</td></tr>';
+    }
+}
+
+// Helper function to format date for API (YYYY-MM-DD)
+function formatDateForAPI(date) {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Initialize date filter when DOM is ready
+let dateFilter = null;
+function initDateFilter() {
+    const container = document.getElementById('dateFilterContainer');
+    if (container) {
+        dateFilter = new DateFilter('dateFilterContainer', (fromDate, toDate) => {
+            currentFromDate = fromDate;
+            currentToDate = toDate;
+            fetchDataViaAPI();
+        });
+    }
+}
+
+// Initialize date filter
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDateFilter);
+} else {
+    initDateFilter();
+}
 
 // Update the report table
 function updateReport(data) {
@@ -58,15 +109,8 @@ function updateReport(data) {
         return;
     }
 
-    // Log all column names from first row to debug
-    if (data.length > 0) {
-        console.log('Available columns:', Object.keys(data[0]));
-        console.log('Sample row:', data[0]);
-    }
-
     // Separate daily data rows from grand total
     const dataRows = data.filter(row => {
-        // Skip grand total row (server marks it with _isGrandTotal flag or Date === 'GRAND TOTAL')
         if (row._isGrandTotal || (row.Date && row.Date.toString().toUpperCase() === 'GRAND TOTAL')) {
             return false;
         }
@@ -98,13 +142,12 @@ function renderDataRows(rows) {
     rows.forEach(row => {
         const tr = document.createElement('tr');
         
-        // Date column - try multiple possible column names
+        // Date column
         const dateTd = document.createElement('td');
-        const dateValue = row.Date || row.date || row.DATE || row['Date'] || row['DATE'] || '';
-        dateTd.textContent = formatDate(dateValue);
+        dateTd.textContent = row.Date || row.date || row.DATE || row['Date'] || row['DATE'] || '';
         tr.appendChild(dateTd);
         
-        // New column - try multiple possible column names
+        // New column
         const newTd = document.createElement('td');
         const newValue = row.New || row.new || row.NEW || row['New'] || row['NEW'] || '0';
         newTd.textContent = formatNumber(newValue);
@@ -197,14 +240,6 @@ function renderGrandTotal(totalRow) {
     `;
 }
 
-// Format date - keep MM/DD/YYYY format as received from server
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    
-    // Return as-is (server sends MM/DD/YYYY format)
-    return dateStr.toString();
-}
-
 // Format number with commas
 function formatNumber(value) {
     const num = parseFloat(value) || 0;
@@ -224,81 +259,9 @@ function updateLastUpdateTime() {
     lastUpdate.textContent = timeString;
 }
 
-// Fallback: Fetch data via REST API if WebSocket fails
-async function fetchDataViaAPI() {
-    try {
-        const response = await fetch('/api/leaderboard');
-        const data = await response.json();
-        updateReport(data);
-        updateLastUpdateTime();
-    } catch (error) {
-        console.error('Failed to fetch data via API:', error);
-    }
-}
-
-// Date filter variables
-let currentFromDate = null;
-let currentToDate = null;
-
-// Helper function to format date for API (YYYY-MM-DD)
-function formatDateForAPI(date) {
-    if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Update fetchDataViaAPI to use date filter
-const originalFetchDataViaAPI = fetchDataViaAPI;
-fetchDataViaAPI = async function() {
-    try {
-        const params = new URLSearchParams();
-        if (currentFromDate) {
-            const fromDateStr = formatDateForAPI(currentFromDate);
-            params.append('fromDate', fromDateStr);
-        }
-        if (currentToDate) {
-            const toDateStr = formatDateForAPI(currentToDate);
-            params.append('toDate', toDateStr);
-        }
-        
-        const url = '/api/leaderboard' + (params.toString() ? '?' + params.toString() : '');
-        const response = await fetch(url);
-        const data = await response.json();
-        updateReport(data);
-        updateLastUpdateTime();
-    } catch (error) {
-        console.error('Failed to fetch data via API:', error);
-    }
-};
-
-// Initialize date filter when DOM is ready
-let dateFilter = null;
-function initDateFilter() {
-    const container = document.getElementById('dateFilterContainer');
-    if (container) {
-        dateFilter = new DateFilter('dateFilterContainer', (fromDate, toDate) => {
-            currentFromDate = fromDate;
-            currentToDate = toDate;
-            fetchDataViaAPI();
-        });
-    }
-}
-
-// Initialize date filter
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDateFilter);
-} else {
-    initDateFilter();
-}
-
 // Initial fetch
 fetchDataViaAPI();
 
-// Fallback polling every 10 seconds as backup
-setInterval(() => {
-    if (!socket.connected) {
-        fetchDataViaAPI();
-    }
-}, 10000);
+// Refresh every 10 minutes
+setInterval(fetchDataViaAPI, 600000);
+
