@@ -219,4 +219,16 @@ function updateLastUpdateTime() {
         timeZone: 'Asia/Kolkata'
     });
     document.getElementById('lastUpdate').textContent = 'Last updated: ' + timeString;
+    
+    // Update report date
+    const reportDateElem = document.getElementById('reportDate');
+    if (reportDateElem) {
+        const reportDate = now.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Asia/Kolkata'
+        });
+        reportDateElem.textContent = reportDate;
+    }
 }

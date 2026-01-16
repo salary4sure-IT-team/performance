@@ -16,7 +16,7 @@ body {
 .container {
     max-width: 1600px;
     margin: 0 auto;
-    background: #ffffff;
+    /* background: #ffffff; */
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     overflow: hidden;
