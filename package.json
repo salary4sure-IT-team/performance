@@ -6,8 +6,13 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "stop": "kill-port 3000",
-      "restart": "npm run stop && npm run start"
+
+    "pm2:start": "pm2 start server.js --name google-sheets-leaderboard",
+    "pm2:stop": "pm2 stop google-sheets-leaderboard",
+    "pm2:restart": "pm2 restart google-sheets-leaderboard",
+    "pm2:delete": "pm2 delete google-sheets-leaderboard",
+    "pm2:logs": "pm2 logs google-sheets-leaderboard",
+    "pm2:status": "pm2 status"
   },
   "keywords": [
     "express",
@@ -25,7 +30,6 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "kill-port": "^2.0.1",
     "nodemon": "^3.0.1"
   }
 }
