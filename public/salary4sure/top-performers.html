@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Performers - Salary4Sure</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='70' font-size='80'>🏆</text></svg>">
     <link rel="stylesheet" href="../styles.css">
     <style>
         * {
@@ -42,7 +43,7 @@
         }
 
         .top-banner-text::before {
-            content: '🏆';
+            content: '';
             font-size: 40px;
             filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
         }
@@ -63,13 +64,14 @@
             border-radius: 10px;
             padding: 12px 18px;
             color: white;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             line-height: 1.6;
         }
 
         .info-box.left {
             flex: 0 0 auto;
+            text-align: center;
         }
 
         .info-box.right {
@@ -163,7 +165,7 @@
         }
 
         .metric-label {
-            font-size: 12px;
+            font-size: 14px;
             color: #333;
             font-weight: 700;
             text-transform: uppercase;
@@ -171,7 +173,7 @@
         }
 
         .metric-value {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             color: #333;
         }
@@ -207,6 +209,7 @@
         .section-header {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
             margin: 0 0 20px 0;
             font-size: 22px;
@@ -223,7 +226,7 @@
         }
 
         .section-header.fresh::before {
-            content: '✨';
+            content: '🏆';
             font-size: 24px;
         }
 
@@ -232,7 +235,7 @@
         }
 
         .section-header.repeat::before {
-            content: '🔥';
+            content: '🏆';
             font-size: 24px;
         }
 
@@ -284,7 +287,7 @@
         }
 
         .performer-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: #333;
             margin: 9px 0 7px 0;
@@ -297,7 +300,7 @@
             color: white;
             padding: 10px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 700;
             margin: 7px 0;
             display: inline-block;
@@ -313,7 +316,7 @@
         }
 
         .cases-badge {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #333;
             margin-top: 4px;
@@ -335,10 +338,8 @@
             background: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow-y: auto;
             overflow-x: hidden;
             border: 1px solid #e9ecef;
-            max-height: 500px;
             position: relative;
         }
 
@@ -377,7 +378,7 @@
             padding: 14px 10px;
             text-align: left;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -391,8 +392,9 @@
         td {
             padding: 12px 10px;
             border-bottom: 1px solid #e9ecef;
-            font-size: 12px;
+            font-size: 14px;
             text-align: left;
+            font-weight: 700;
         }
 
         tbody tr:hover {
@@ -443,7 +445,7 @@
             padding: 6px 8px;
             display: inline-block;
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .percentage-excellent {
@@ -488,7 +490,7 @@
         #lastUpdate {
             text-align: right;
             color: #999;
-            font-size: 12px;
+            font-size: 14px;
             margin-top: 25px;
             padding-right: 20px;
         }
@@ -542,7 +544,7 @@
         </div>
     </div>
     <div class="top-banner">
-        <div class="top-banner-text">JANUARY - LEADERBOARD</div>
+        <div class="top-banner-text">🏆 JANUARY - LEADERBOARD</div>
     </div>
     <div class="container">
         <!-- Metrics Dashboard -->
