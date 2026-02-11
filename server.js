@@ -1897,9 +1897,9 @@ async function fetchSalary4SureTopPerformersData() {
         caseTypeDisplay = 'Both';
       } else if (exec.hasRepeat && !exec.hasFresh) {
         caseTypeDisplay = 'Repeat';
-        // Check if it's Prachi Nandan or Nandan Kumar for 3 Cr target
+        // Check if it's Prachi Nandan or Nandan Kumar for 4 Cr target
         if (exec.name.toLowerCase().includes('prachi') || exec.name.toLowerCase().includes('nandan')) {
-          targetAmount = 30000000; // 3 Cr
+          targetAmount = 40000000; // 3 Cr
         }
       }
       
