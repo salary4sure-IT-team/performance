@@ -102,3 +102,30 @@
     }
 }
 
+/* Month quick-filter styles */
+.month-filter-container {
+    margin-bottom: 12px;
+}
+.month-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.month-btn {
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    color: #333;
+}
+.month-btn:hover {
+    background: #f1f5f9;
+}
+.month-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-color: transparent;
+}
+

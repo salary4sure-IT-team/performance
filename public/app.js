@@ -8,15 +8,18 @@ const grandTotalRow = document.getElementById('grandTotalRow');
 const lastUpdate = document.getElementById('lastUpdate');
 const reportDate = document.getElementById('reportDate');
 
+// Track current month for filtering (default to February)
+let currentMonth = 2;
+
 // Update report date
-function updateReportDate() {
-    const now = new Date();
-    const options = { year: 'numeric', month: 'long' };
-    const dateString = now.toLocaleDateString('en-US', options);
-    reportDate.textContent = `Daily Performance Report - January 2026`;
+function updateReportDate(month) {
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const monthIndex = month ? month - 1 : 1;
+    reportDate.textContent = `Daily Performance Report - ${monthNames[monthIndex]} 2026`;
 }
 
-updateReportDate();
+// Initialize with February
+updateReportDate(currentMonth);
 
 // Socket connection events
 socket.on('connect', () => {
@@ -227,7 +230,10 @@ function updateLastUpdateTime() {
 // Fallback: Fetch data via REST API if WebSocket fails
 async function fetchDataViaAPI() {
     try {
-        const response = await fetch('/api/leaderboard');
+        // Use month-based endpoint
+        const endpoint = `/api/leaderboard/${currentMonth}`;
+        console.log('Fetching from:', endpoint);
+        const response = await fetch(endpoint);
         const data = await response.json();
         updateReport(data);
         updateLastUpdateTime();
@@ -293,8 +299,76 @@ if (document.readyState === 'loading') {
     initDateFilter();
 }
 
-// Initial fetch
-fetchDataViaAPI();
+// Initialize month quick-filters (Jan/Feb)
+function initMonthFilters() {
+    const container = document.getElementById('monthFilterContainer');
+    if (!container) return;
+
+    const buttons = container.querySelectorAll('.month-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const month = parseInt(btn.getAttribute('data-month'), 10);
+            applyMonthFilter(month);
+            // Toggle active state
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+}
+
+function applyMonthFilter(month) {
+    // month: 1 = January, 2 = February
+    currentMonth = month;
+    
+    const year = 2026;
+    const fromDate = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0).getDate();
+    const toDate = new Date(year, month - 1, lastDay);
+
+    // Set current filter values
+    currentFromDate = new Date(fromDate);
+    currentFromDate.setHours(0,0,0,0);
+    currentToDate = new Date(toDate);
+    currentToDate.setHours(23,59,59,999);
+
+    // Update report title to show month
+    updateReportDate(month);
+
+    // Fetch data for the selected month
+    fetchDataViaAPI();
+}
+
+// Helper used above to set input values in YYYY-MM-DD
+function formatDateForInput(date) {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Initialize month filters after DOM ready
+function initMonthFiltersWithDefault() {
+    initMonthFilters();
+    
+    // Set February button as active by default
+    const container = document.getElementById('monthFilterContainer');
+    if (container) {
+        const febBtn = container.querySelector('[data-month="2"]');
+        if (febBtn) {
+            febBtn.classList.add('active');
+        }
+    }
+    
+    // Load February data
+    applyMonthFilter(currentMonth);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMonthFiltersWithDefault);
+} else {
+    initMonthFiltersWithDefault();
+}
 
 // Fallback polling every 10 seconds as backup
 setInterval(() => {

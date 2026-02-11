@@ -28,7 +28,12 @@ const PUBLISHED_SHEET_URL = process.env.PUBLISHED_SHEET_URL ||
 
 // Salary4Sure Google Sheet URL
 const SALARY4SURE_SHEET_URL = process.env.SALARY4SURE_SHEET_URL || 
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?output=csv&gid=1101474402';
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?gid=1825927822&single=true&output=csv';
+
+
+// February data Google Sheet URL
+// const FEBRUARY_SHEET_URL = process.env.FEBRUARY_SHEET_URL || 
+//   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?output=csv&gid=1825927822';
 
 // Parse date from DD/MM/YYYY or DD-MM-YYYY format (Excel format)
 function parseDate(dateStr) {
@@ -412,6 +417,225 @@ async function fetchLeaderboardData(fromDate = null, toDate = null) {
   }
 }
 
+// Fetch leaderboard data for a specific month
+async function fetchLeaderboardDataByMonth(month) {
+  try {
+    console.log(`Fetching leaderboard data for month: ${month}`);
+    
+    // Determine which sheet to use based on month
+    let sheetUrl = PUBLISHED_SHEET_URL;
+    let fromDate, toDate;
+    
+    if (month === 1) {
+      // January 2026
+      fromDate = new Date(2026, 0, 1);
+      toDate = new Date(2026, 0, 31);
+      sheetUrl = PUBLISHED_SHEET_URL;
+    } else if (month === 2) {
+      // February 2026
+      fromDate = new Date(2026, 1, 1);
+      toDate = new Date(2026, 1, 28);
+      sheetUrl = FEBRUARY_SHEET_URL;
+    } else {
+      throw new Error('Invalid month. Only months 1 (January) and 2 (February) are supported.');
+    }
+    
+    console.log(`Fetching data from: ${sheetUrl}`);
+    console.log(`Date range: ${fromDate.toDateString()} to ${toDate.toDateString()}`);
+    
+    // Fetch CSV data
+    const response = await axios.get(sheetUrl, {
+      responseType: 'text',
+      timeout: 10000,
+    });
+
+    console.log('CSV data received, length:', response.data.length);
+
+    // Parse CSV data
+    const records = parse(response.data, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+      relax_column_count: true,
+    });
+
+    console.log('Parsed records count:', records.length);
+
+    // Filter out empty rows
+    let filteredRecords = records.filter(row => {
+      const values = Object.values(row);
+      return values.some(val => val && val.toString().trim() !== '');
+    });
+
+    // Filter by date range
+    const disburseDateKeys = ['Disburse Date', 'Disburse date', 'disburse date', 'DISBURSE DATE', 
+                               'Disburse Date ', 'DisburseDate', 'Disburse_Date'];
+    const filteredData = [];
+    
+    for (const row of filteredRecords) {
+      let disburseDateValue = null;
+      
+      for (const key of disburseDateKeys) {
+        if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+          disburseDateValue = parseDate(row[key]);
+          if (disburseDateValue) break;
+        }
+      }
+      
+      if (!disburseDateValue) {
+        for (const key of Object.keys(row)) {
+          if (key && (key.toLowerCase().includes('date') || key.toLowerCase().includes('disburse'))) {
+            const testDate = parseDate(row[key]);
+            if (testDate) {
+              disburseDateValue = testDate;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!disburseDateValue) continue;
+      
+      if (isDateInRange(disburseDateValue, fromDate, toDate)) {
+        filteredData.push(row);
+      }
+    }
+
+    // Sort by date
+    filteredData.sort((a, b) => {
+      let dateA = null, dateB = null;
+      for (const key of disburseDateKeys) {
+        if (a[key]) dateA = parseDate(a[key]);
+        if (b[key]) dateB = parseDate(b[key]);
+      }
+      if (!dateA || !dateB) return 0;
+      return dateA - dateB;
+    });
+
+    console.log('Records for month', month, ':', filteredData.length);
+
+    // Group by date and calculate daily totals
+    const dailyGroups = {};
+    const repeatNewKeys = ['Repeat/New', 'repeat/new', 'Repeat / New', 'repeat / new', 'REPEAT/NEW', 'RepeatNew'];
+    
+    for (const row of filteredData) {
+      let disburseDate = null;
+      
+      for (const key of disburseDateKeys) {
+        if (row[key]) {
+          disburseDate = parseDate(row[key]);
+          if (disburseDate) break;
+        }
+      }
+      
+      if (!disburseDate) continue;
+      
+      const dateKey = `${disburseDate.getFullYear()}-${String(disburseDate.getMonth() + 1).padStart(2, '0')}-${String(disburseDate.getDate()).padStart(2, '0')}`;
+      
+      if (!dailyGroups[dateKey]) {
+        dailyGroups[dateKey] = {
+          date: disburseDate,
+          rows: []
+        };
+      }
+      dailyGroups[dateKey].rows.push(row);
+    }
+
+    const dailyData = Object.values(dailyGroups).sort((a, b) => a.date - b.date);
+    const dailyDataArray = [];
+    let grandTotalNew = 0;
+    let grandTotalRepeat = 0;
+    let grandTotalCases = 0;
+    let grandTotalLoanAmount = 0;
+    let grandTotalPFAmount = 0;
+    let grandTotalDisbursalAmount = 0;
+    let grandTotalRepayAmount = 0;
+
+    function getRepeatNewValue(row, keys) {
+      for (const key of keys) {
+        const value = row[key];
+        if (value !== undefined && value !== null && value !== '') {
+          const str = value.toString().trim().toLowerCase();
+          return str;
+        }
+      }
+      return '';
+    }
+
+    for (const dayGroup of dailyData) {
+      let dayNew = 0;
+      let dayRepeat = 0;
+      let dayLoanAmount = 0;
+      let dayPFAmount = 0;
+      let dayDisbursalAmount = 0;
+      let dayRepayAmount = 0;
+      
+      for (const row of dayGroup.rows) {
+        const repeatNewValue = getRepeatNewValue(row, repeatNewKeys);
+        if (repeatNewValue === 'new') {
+          dayNew++;
+        } else if (repeatNewValue === 'repeat') {
+          dayRepeat++;
+        }
+        
+        dayLoanAmount += parseFloat(row['Loan Amount'] || row['loan amount'] || 0) || 0;
+        dayPFAmount += parseFloat(row['PF Amount'] || row['pf amount'] || 0) || 0;
+        dayDisbursalAmount += parseFloat(row['Disbursal Amount'] || row['disbursal amount'] || 0) || 0;
+        dayRepayAmount += parseFloat(row['Repay Amount'] || row['repay amount'] || 0) || 0;
+      }
+
+      const dayNew_Repeat = dayNew + dayRepeat;
+      const dateObj = dayGroup.date;
+      const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+      const dailyRow = {
+        'Date': dateStr,
+        'New': dayNew,
+        'Repeat': dayRepeat,
+        'Total Cases': dayNew_Repeat,
+        'Loan Amount': dayLoanAmount,
+        'PF Amount': dayPFAmount,
+        'Disbursal Amount': dayDisbursalAmount,
+        'Repay Amount': dayRepayAmount
+      };
+
+      dailyDataArray.push(dailyRow);
+
+      grandTotalNew += dayNew;
+      grandTotalRepeat += dayRepeat;
+      grandTotalCases += dayNew_Repeat;
+      grandTotalLoanAmount += dayLoanAmount;
+      grandTotalPFAmount += dayPFAmount;
+      grandTotalDisbursalAmount += dayDisbursalAmount;
+      grandTotalRepayAmount += dayRepayAmount;
+    }
+
+    const grandTotalRow = {
+      'Date': 'GRAND TOTAL',
+      'New': grandTotalNew,
+      'Repeat': grandTotalRepeat,
+      'Total Cases': grandTotalCases,
+      'Loan Amount': grandTotalLoanAmount,
+      'PF Amount': grandTotalPFAmount,
+      'Disbursal Amount': grandTotalDisbursalAmount,
+      'Repay Amount': grandTotalRepayAmount,
+      '_isGrandTotal': true
+    };
+
+    dailyDataArray.push(grandTotalRow);
+
+    console.log('Daily data count for month', month, ':', dailyDataArray.length - 1);
+    return dailyDataArray;
+  } catch (error) {
+    console.error('Error fetching month data from Google Sheets:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    throw error;
+  }
+}
+
 // Fetch executive report data
 async function fetchExecutiveReportData() {
   try {
@@ -573,6 +797,21 @@ app.get('/api/leaderboard', async (req, res) => {
       error: 'Failed to fetch leaderboard data',
       message: error.message,
       url: PUBLISHED_SHEET_URL
+    });
+  }
+});
+
+// Fetch leaderboard data by month
+app.get('/api/leaderboard/:month', async (req, res) => {
+  try {
+    const month = parseInt(req.params.month, 10);
+    const data = await fetchLeaderboardDataByMonth(month);
+    res.json(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch leaderboard data',
+      message: error.message
     });
   }
 });
