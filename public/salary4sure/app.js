@@ -13,7 +13,7 @@ function updateReportDate() {
     const now = new Date();
     const options = { year: 'numeric', month: 'long' };
     const dateString = now.toLocaleDateString('en-US', options);
-    reportDate.textContent = `Daily Performance Report - January 2026`;
+    reportDate.textContent = `Daily Performance Report - February 2026`;
 }
 
 updateReportDate();

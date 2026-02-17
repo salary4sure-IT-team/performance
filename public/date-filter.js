@@ -13,11 +13,11 @@ class DateFilter {
     init() {
         if (!this.container) return;
 
-        // Set default dates (January 1, 2026 to today)
+        // Set default dates (February 1, 2026 to today)
         const today = new Date();
-        const jan1_2026 = new Date(2026, 0, 1);
-        
-        this.fromDate = jan1_2026;
+        const feb1_2026 = new Date(2026, 1, 1);
+
+        this.fromDate = feb1_2026;
         this.toDate = today;
 
         this.render();
@@ -82,9 +82,9 @@ class DateFilter {
 
     resetFilter() {
         const today = new Date();
-        const jan1_2026 = new Date(2026, 0, 1);
-        
-        this.fromDate = jan1_2026;
+        const feb1_2026 = new Date(2026, 1, 1);
+
+        this.fromDate = feb1_2026;
         this.toDate = today;
 
         // Update inputs
