@@ -67,19 +67,19 @@ function parseDate(dateStr) {
   return null;
 }
 
-// Check if date is from January 1, 2026 to today
-function isFromJanuary12026ToToday(date) {
+// Check if date is from February 1, 2026 to today
+function isFromFebruary12026ToToday(date) {
   if (!date) return false;
-  const jan1_2026 = new Date(2026, 0, 1); // January 1, 2026
-  jan1_2026.setHours(0, 0, 0, 0);
+  const feb1_2026 = new Date(2026, 1, 1); // February 1, 2026
+  feb1_2026.setHours(0, 0, 0, 0);
   const today = new Date();
   today.setHours(23, 59, 59, 999); // End of today
-  
+
   // Create a copy of the date for comparison (don't modify original)
   const dateCopy = new Date(date);
   dateCopy.setHours(0, 0, 0, 0);
-  
-  return dateCopy >= jan1_2026 && dateCopy <= today;
+
+  return dateCopy >= feb1_2026 && dateCopy <= today;
 }
 
 // Check if date is within a date range
@@ -167,7 +167,7 @@ async function fetchLeaderboardData(fromDate = null, toDate = null) {
       return values.some(val => val && val.toString().trim() !== '');
     });
 
-    // Filter by Disburse Date - from January 1, 2026 onwards
+    // Filter by Disburse Date - from February 1, 2026 onwards
     const disburseDateKeys = ['Disburse Date', 'Disburse date', 'disburse date', 'DISBURSE DATE', 
                                'Disburse Date ', 'DisburseDate', 'Disburse_Date'];
     // const dateKeys = ['Date', 'date', 'DATE', 'Date ', 'DATE ']; // For display
@@ -215,8 +215,8 @@ async function fetchLeaderboardData(fromDate = null, toDate = null) {
             filteredData.push(row);
           }
         } else {
-          // Default: Only include from January 1, 2026 to today
-          if (isFromJanuary12026ToToday(disburseDateValue)) {
+          // Default: Only include from February 1, 2026 to today
+          if (isFromFebruary12026ToToday(disburseDateValue)) {
             filteredData.push(row);
           }
         }
@@ -234,7 +234,7 @@ async function fetchLeaderboardData(fromDate = null, toDate = null) {
       return dateA - dateB;
     });
 
-    console.log('Records from Jan 1, 2026 to today (by Disburse Date):', filteredData.length);
+    console.log('Records from Feb 1, 2026 to today (by Disburse Date):', filteredData.length);
     console.log('Total records parsed:', records.length);
     console.log('Records after basic filter:', filteredRecords.length);
     
@@ -661,7 +661,7 @@ async function fetchExecutiveReportData() {
       return values.some(val => val && val.toString().trim() !== '');
     });
 
-    // Filter by Disburse Date - from January 1, 2026 to today
+    // Filter by Disburse Date - from February 1, 2026 to today
     const disburseDateKeys = ['Disburse Date', 'Disburse date', 'disburse date', 'DISBURSE DATE', 
                                'Disburse Date ', 'DisburseDate', 'Disburse_Date'];
     const filteredData = [];
@@ -693,7 +693,7 @@ async function fetchExecutiveReportData() {
       if (!disburseDateValue) continue;
       
       if (disburseDateValue && !isNaN(disburseDateValue.getTime())) {
-        if (isFromJanuary12026ToToday(disburseDateValue)) {
+        if (isFromFebruary12026ToToday(disburseDateValue)) {
           filteredData.push(row);
         }
       }
@@ -1242,7 +1242,7 @@ async function fetchSalary4SureData(fromDate = null, toDate = null) {
             filteredData.push(row);
           }
         } else {
-          if (isFromJanuary12026ToToday(disburseDateValue)) {
+          if (isFromFebruary12026ToToday(disburseDateValue)) {
             filteredData.push(row);
           }
         }

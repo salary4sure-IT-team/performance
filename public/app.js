@@ -317,7 +317,7 @@ function initMonthFilters() {
 }
 
 function applyMonthFilter(month) {
-    // month: 1 = January, 2 = February
+    // month:  2 = February
     currentMonth = month;
     
     const year = 2026;
