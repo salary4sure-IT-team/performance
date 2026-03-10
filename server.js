@@ -28,12 +28,15 @@ const PUBLISHED_SHEET_URL = process.env.PUBLISHED_SHEET_URL ||
 
 // Salary4Sure Google Sheet URL
 const SALARY4SURE_SHEET_URL = process.env.SALARY4SURE_SHEET_URL || 
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?gid=1825927822&single=true&output=csv';
-
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?gid=1691474157&single=true&output=csv';
 
 // February data Google Sheet URL
-// const FEBRUARY_SHEET_URL = process.env.FEBRUARY_SHEET_URL || 
-//   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?output=csv&gid=1825927822';
+const FEBRUARY_SHEET_URL = process.env.FEBRUARY_SHEET_URL || 
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?output=csv&gid=1825927822';
+
+// March data Google Sheet URL
+const MARCH_SHEET_URL = process.env.MARCH_SHEET_URL || 
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNPt_FYJXzimdb9d1w5v7Dyoq-cB26orQKBwOlOCUxwBmDtMgxMoMgpK_XDymo_5dfDh79pHPaHtyR/pub?gid=1691474157&single=true&output=csv';
 
 // Parse date from DD/MM/YYYY or DD-MM-YYYY format (Excel format)
 function parseDate(dateStr) {
@@ -436,8 +439,13 @@ async function fetchLeaderboardDataByMonth(month) {
       fromDate = new Date(2026, 1, 1);
       toDate = new Date(2026, 1, 28);
       sheetUrl = FEBRUARY_SHEET_URL;
+    } else if (month === 3) {
+      // March 2026
+      fromDate = new Date(2026, 2, 1);
+      toDate = new Date(2026, 2, 31);
+      sheetUrl = MARCH_SHEET_URL;
     } else {
-      throw new Error('Invalid month. Only months 1 (January) and 2 (February) are supported.');
+      throw new Error('Invalid month. Only months 1 (January), 2 (February), and 3 (March) are supported.');
     }
     
     console.log(`Fetching data from: ${sheetUrl}`);
@@ -1882,7 +1890,8 @@ async function fetchSalary4SureTopPerformersData() {
         : 0;
       
       let caseTypeDisplay = 'Fresh';
-      let targetAmount = 6000000; // Default 60 Lac
+      let targetAmount = 7800000; // Default 78 Lac for fresh
+
       
       // Special handling for specific executives with fixed case types and targets
       if (exec.name.toLowerCase().includes('sourabh')) {
@@ -1890,9 +1899,9 @@ async function fetchSalary4SureTopPerformersData() {
         caseTypeDisplay = 'Both';
         targetAmount = 20000000; // 2 Cr
       } else if (exec.name.toLowerCase().includes('rahul')) {
-        // Rahul is always Both with 2 Cr target
-        caseTypeDisplay = 'Both';
-        targetAmount = 20000000; // 2 Cr
+        // Rahul fresh target should be 40 Lakh regardless of case type
+        caseTypeDisplay = exec.hasRepeat && exec.hasFresh ? 'Both' : (exec.hasRepeat ? 'Repeat' : 'Fresh');
+        targetAmount = 4000000; // 40 Lakh for Rahul
       } else if (exec.hasFresh && exec.hasRepeat) {
         caseTypeDisplay = 'Both';
       } else if (exec.hasRepeat && !exec.hasFresh) {
