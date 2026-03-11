@@ -1899,9 +1899,9 @@ async function fetchSalary4SureTopPerformersData() {
         caseTypeDisplay = 'Both';
         targetAmount = 20000000; // 2 Cr
       } else if (exec.name.toLowerCase().includes('rahul')) {
-        // Rahul fresh target should be 340 Lakh (3.4 Cr) regardless of case type
+        // Rahul fresh target should be 40 Lakh regardless of case type
         caseTypeDisplay = exec.hasRepeat && exec.hasFresh ? 'Both' : (exec.hasRepeat ? 'Repeat' : 'Fresh');
-        targetAmount = 34000000; // 340 Lakh for Rahul
+        targetAmount = 4000000; // 40 Lakh for Rahul
       } else if (exec.hasFresh && exec.hasRepeat) {
         caseTypeDisplay = 'Both';
       } else if (exec.hasRepeat && !exec.hasFresh) {
