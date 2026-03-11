@@ -1899,9 +1899,13 @@ async function fetchSalary4SureTopPerformersData() {
         caseTypeDisplay = 'Both';
         targetAmount = 20000000; // 2 Cr
       } else if (exec.name.toLowerCase().includes('rahul')) {
-        // Rahul fresh target should be 40 Lakh regardless of case type
+        // Rahul: Fresh 40L, Repeat 340L (3.4 Cr)
         caseTypeDisplay = exec.hasRepeat && exec.hasFresh ? 'Both' : (exec.hasRepeat ? 'Repeat' : 'Fresh');
-        targetAmount = 4000000; // 40 Lakh for Rahul
+        if (exec.hasFresh && !exec.hasRepeat) {
+          targetAmount = 4000000; // 40 Lakh for fresh-only
+        } else if (exec.hasRepeat) {
+          targetAmount = 340000000; // 340 Lakh (3.4 Cr) for repeat
+        }
       } else if (exec.hasFresh && exec.hasRepeat) {
         caseTypeDisplay = 'Both';
       } else if (exec.hasRepeat && !exec.hasFresh) {
